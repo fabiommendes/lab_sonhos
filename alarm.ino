@@ -1,10 +1,55 @@
 /********************************************************************************************************
  *                                           Config alarm
  ********************************************************************************************************/
-void update_cfg_alarm() {
-    display_write("cfga");
+uint8_t alarm_hour = 0, alarm_min = 0;
+unsigned long alarm_time;
+boolean cfg_edit_minutes_alarm = true;
+
+void edit_hour(uint8_t *hour, uint8_t *min, boolean *edit_minutes) {
+  char buffer[6];
+
+  // Faz o display tremer nas horas ou nos minutos
+  get_hour_string(buffer, hour[0], min[0]);
+  display_write(buffer);
+  delay(5);
+  if (edit_minutes[0]) {
+    buffer[3] = ' ';
+    buffer[4] = ' ';
+  } else {
+    buffer[0] = ' ';
+    buffer[1] = ' ';
+  }
+  display_write(buffer);
+  delay(15);
+  
+  // Le entradas: botao cfg para alternar modo minuto/hora
+  if (button_click(BTN_CONFIG, 50, 500)) {
+    edit_minutes[0] = !edit_minutes[0];
+    
+  // Botoes direcionais para alterar valor numerico
+  } else if (button_click(BTN_RIGHT, 300, 100)) {
+    if (edit_minutes[0]) {
+      min[0] = (min[0] + 1) % 60;
+    } else {
+      hour[0] = (hour[0] + 1) % 24;
+    }
+  } else if (button_click(BTN_LEFT, 300, 100)) {
+    if (edit_minutes) {
+      min[0] = (min[0] + 59) % 60; // igual a (min - 1) mod 60, mas respeita sinal
+    } else {
+      hour[0] = (hour[0] + 23) % 24;
+    }
+  }
 }
 
+void update_cfg_alarm() {
+  edit_hour(&alarm_hour, &alarm_min, &cfg_edit_minutes_alarm);
+  
+  // Sai caso o tempo tenha expirado
+  if (button_idle() > 5000) {
+    change_state(STATE_HOUR);
+  }
+}
 
 /********************************************************************************************************
  *                                            Run alarm

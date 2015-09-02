@@ -4,6 +4,7 @@
 typedef void (*state_function_t)();
 typedef void (*event_t)();
 state_function_t RUNNING_STATE;
+boolean cfg_edit_minutes = true;
 
 #define STATE_HOUR &update_hour
 #define STATE_MENU &update_menu

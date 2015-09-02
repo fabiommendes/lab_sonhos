@@ -14,7 +14,7 @@ void setup() {
   setup_lights();
   
   // Grava o estado inicial
-  change_state(STATE_HOUR);
+  change_state(STATE_CFG_ALARM);
 }   
 
 // Delega o loop principal para o estado atual

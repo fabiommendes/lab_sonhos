@@ -23,15 +23,28 @@ void setup_rtc() {
 // Grava uma string do tipo HH:MM no buffer de entrada.
 // Assume que o buffer possui pelo menos 6 entradas para 
 // conseguir gravar o valor nulo no final da string.
-void get_hour_string(char* buffer) {
-  Time time = rtc_ctl.getTime();
-  buffer[0] = (time.hour / 10) + 48; // 48 == '0' em ascii
-  buffer[1] = (time.hour % 10) + 48;
+void get_hour_string(char* buffer, uint8_t hour, uint8_t min) {
+  buffer[0] = (hour / 10) + 48; // 48 == '0' em ascii
+  buffer[1] = (hour % 10) + 48;
   buffer[2] = ':';
-  buffer[3] = (time.min / 10) + 48;
-  buffer[4] = (time.min % 10) + 48;
+  buffer[3] = (min / 10) + 48;
+  buffer[4] = (min % 10) + 48;
   buffer[5] = 0; // terminaçao nula da string
 }
+
+void get_hour_string(char* buffer) {
+  Time time = rtc_ctl.getTime();
+  get_hour_string(buffer, time.hour, time.min);
+}
+
+
+// Escreve a hora atual no display.
+void display_write_hour() {
+  char buffer[6];
+  get_hour_string(buffer);
+  display_write(buffer);
+}
+
 
 // Retorna um inteiro com o valor da hora
 uint8_t get_hour() {
